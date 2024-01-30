@@ -19,7 +19,7 @@ class Player(db.Model):
     _name = db.Column(db.String(255), unique=False, nullable=False)
     _uid = db.Column(db.String(255), unique=True, nullable=False)
     _password = db.Column(db.String(255), unique=False, nullable=False)
-    _tokens = db.Column(db.Integer)    
+    _tokens = db.Column(db.Integer)
 
     # constructor of a Player object, initializes the instance variables within object (self)
     def __init__(self, name, uid, tokens, password="123qwerty"):

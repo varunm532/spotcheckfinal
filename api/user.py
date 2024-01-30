@@ -3,37 +3,41 @@ from flask import Blueprint, request, jsonify, current_app, Response
 from flask_restful import Api, Resource # used for REST API building
 from datetime import datetime
 from auth_middleware import token_required
+from __init__ import app, db, cors, dbURI
+import sqlite3
+
 
 from model.users import User
 
 user_api = Blueprint('user_api', __name__,
-                   url_prefix='/api/users')
+                   url_prefix='/api/user')
 
 # API docs https://flask-restful.readthedocs.io/en/latest/api.html
 api = Api(user_api)
 
 class UserAPI:        
     class _CRUD(Resource):  # User API operation for Create, Read.  THe Update, Delete methods need to be implemeented
-        @token_required
-        def post(self, current_user): # Create method
+        # @token_required
+        def post(self): # Create method
             ''' Read data for json body '''
             body = request.get_json()
+            
             
             ''' Avoid garbage in, error checking '''
             # validate name
             name = body.get('name')
-            if name is None or len(name) < 2:
+            if name is None or len(name) < 1:
                 return {'message': f'Name is missing, or is less than 2 characters'}, 400
             # validate uid
             uid = body.get('uid')
-            if uid is None or len(uid) < 2:
+            if uid is None or len(uid) < 1:
                 return {'message': f'User ID is missing, or is less than 2 characters'}, 400
             # look for password and dob
             password = body.get('password')
             dob = body.get('dob')
 
             ''' #1: Key code block, setup USER OBJECT '''
-            uo = User(name=name, 
+            uo = User(name=name,
                       uid=uid)
             
             ''' Additional garbage error checking '''
@@ -56,8 +60,8 @@ class UserAPI:
             # failure returns error
             return {'message': f'Processed {name}, either a format error or User ID {uid} is duplicate'}, 400
 
-        @token_required
-        def get(self, current_user): # Read Method
+        # @token_required
+        def get(self): # Read Method , current_user
             users = User.query.all()    # read/extract all users from database
             json_ready = [user.read() for user in users]  # prepare output in json
             return jsonify(json_ready)  # jsonify creates Flask response object, more specific to APIs than json.dumps
@@ -101,10 +105,8 @@ class UserAPI:
                                 )
                         return resp
                     except Exception as e:
-                        return {
-                            "error": "Something went wrong",
-                            "message": str(e)
-                        }, 500
+                        current_app.logger.error('Error during authentication: %s', e)
+                        return {'message': 'Internal server error'}, 500
                 return {
                     "message": "Error fetching auth token!",
                     "data": None,
@@ -121,4 +123,3 @@ class UserAPI:
     # building RESTapi endpoint
     api.add_resource(_CRUD, '/')
     api.add_resource(_Security, '/authenticate')
-    

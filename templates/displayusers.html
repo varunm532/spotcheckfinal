@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Users</title>
+</head>
+<body>
+
+<h2>User List</h2>
+
+<div id="userList"></div>
+
+<script>
+    // Function to fetch and display user data
+    function displayUsers() {
+        //fetch('/api/players/', {
+            fetch('/api/user/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(users => {
+            // Build HTML for user list
+            var userListHTML = '<ul>';
+            users.forEach(user => {
+                userListHTML += '<li>';
+                userListHTML += '<strong>Name:</strong> ' + user.name + '<br>';
+                userListHTML += '<strong>User ID:</strong> ' + user.uid + '<br>';
+                userListHTML += '<strong>Date of Birth:</strong> ' + user.dob + '<br>';
+                //userListHTML += '<strong>Age:</strong> ' + user.age + '<br>';
+                userListHTML += '<strong>Posts:</strong> <ul>';
+                   user.posts.forEach(post => {
+                    userListHTML += '<li>' + post.note + '</li>';
+                });
+                
+                userListHTML += '</ul>';
+                userListHTML += '</li>';
+            });
+            userListHTML += '</ul>';
+            
+            // Update the HTML content
+            document.getElementById('userList').innerHTML = userListHTML;
+        })
+        .catch(error => {
+            console.error('Error fetching users:', error);
+            alert('Error fetching users. Please check the console for details.');
+        });
+    }
+
+    // Call the displayUsers function on page load
+    window.onload = function() {
+        displayUsers();
+    };
+</script>
+
+</body>
+</html>

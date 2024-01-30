@@ -1,8 +1,12 @@
-from flask import Flask
+from flask import Flask, render_template, url_for, redirect, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required
+from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 import os
+import sqlite3
+
 
 """
 These object can be used throughout project.
@@ -22,6 +26,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY') or 'SECRET_KEY'
 app.config['SECRET_KEY'] = SECRET_KEY
 db = SQLAlchemy()
 Migrate(app, db)
+
 
 # Images storage
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # maximum size of uploaded content

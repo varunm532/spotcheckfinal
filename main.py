@@ -1,7 +1,8 @@
 import threading
+import sqlite3
 
 # import "packages" from flask
-from flask import render_template,request  # import render_template from "public" flask libraries
+from flask import render_template,render_template, url_for, redirect,request  # import render_template from "public" flask libraries
 from flask.cli import AppGroup
 
 
@@ -15,6 +16,8 @@ from api.player import player_api
 # database migrations
 from model.users import initUsers
 from model.players import initPlayers
+from flask_login import  LoginManager, login_user, logout_user, login_required, UserMixin
+from flask_bcrypt import Bcrypt
 
 # setup App pages
 from projects.projects import app_projects # Blueprint directory import projects definition
@@ -28,6 +31,9 @@ app.register_blueprint(user_api) # register api routes
 app.register_blueprint(player_api)
 app.register_blueprint(app_projects) # register app pages
 
+login_manager = LoginManager(app)
+bcrypt = Bcrypt(app)
+
 @app.errorhandler(404)  # catch for URL not found
 def page_not_found(e):
     # note that we set the 404 status explicitly
@@ -40,6 +46,57 @@ def index():
 @app.route('/table/')  # connects /stub/ URL to stub() function
 def table():
     return render_template("table.html")
+
+@app.route('/register', methods=['GET', 'POST'])
+def login():
+    # Define your site variable here
+    site = {'baseurl': 'http://localhost:8086'}
+    return render_template('login.html', site=site)
+
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+    # Define your site variable here
+    site = {'baseurl': 'http://localhost:8086'}
+    return render_template('signin.html', site=site)
+
+@app.route('/display/', methods=['GET'])
+def display():
+    site = {'baseurl': 'http://localhost:8086'}
+    ##return render_template('getusers.html', site=site)
+    return render_template('displayusers.html', site=site)
+
+@app.route('/login1', methods=['GET', 'POST'])
+def login1():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = user_api.query.filter_by(uid=username).first()
+
+        #if user and bcrypt.check_password_hash(user.password, password):
+        if user and  (user._password == password):
+            login_user(user)
+            return redirect(url_for('welcome'))
+
+    return render_template('login1.html')
+class User(UserMixin):
+    def __init__(self, uid, password):
+        self.uid = uid
+        self._password = password
+
+    def get_id(self):
+        return str(self.uid)
+
+# Set up Flask-Login
+login_manager = LoginManager(app)
+
+@login_manager.user_loader
+def load_user(uid):
+    # Return the user object based on the user_id
+    return User.query.get(int(uid))
+
+# @app.route('/display/')
+# def display():
+#     return render_template("displayusers.html")
 
 @app.before_request
 def before_request():

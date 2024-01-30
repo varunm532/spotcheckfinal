@@ -1,0 +1,8 @@
+-- database: /home/varunm/vscode/cpt-code/instance/volumes/sqlite.db
+
+-- Use the ▷ button in the top right corner to run the entire file.
+
+SELECT * FROM "Users";
+
+insert into users
+VALUES ('ABC','ABC','abc','01-01-2007');

@@ -1,0 +1,78 @@
+<html>
+    <body>
+        <table>
+            <thead>
+            <tr>
+              <th>Name</th>
+              <th>ID</th>
+              <th>Age</th>
+            </tr>
+            </thead>
+            <tbody id="result">
+            </tbody>
+        </table>
+
+        <script type="module", src="/static/js/api/config.js"></script>
+        <script type="module">
+            import { uri } from '/static/js/api/config.js';
+            // Set Users endpoint (list of users)
+            const url = uri + '/api/user/';
+          
+            // prepare HTML result container for new output
+            const resultContainer = document.getElementById("result");
+            const header = new Headers();
+            header.append("Cookie", "jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfdWlkIjoidG9ieSJ9.k8yO84FQ_L3RY-MhpTWzFgIHJUcRnROtNm2En0SpKcA");
+
+            const requestOptions = {
+              method: 'GET',
+              headers: header,
+              redirect: 'follow'
+            };
+            fetch(url, requestOptions)
+              // response is a RESTful "promise" on any successful fetch
+              .then(response => {
+                // check for response errors and display
+                if (response.status !== 200) {
+                    const errorMsg = 'Database response error: ' + response.status;
+                    console.log(errorMsg);
+                    const tr = document.createElement("tr");
+                    const td = document.createElement("td");
+                    td.innerHTML = errorMsg;
+                    tr.appendChild(td);
+                    resultContainer.appendChild(tr);
+                    return;
+                }
+                // valid response will contain JSON data
+                response.json().then(data => {
+                    console.log(data);
+                    for (const row of data) {
+                      // tr and td build out for each row
+                      const tr = document.createElement("tr");
+                      const name = document.createElement("td");
+                      const id = document.createElement("td");
+                      const age = document.createElement("td");
+                      // data is specific to the API
+                      name.innerHTML = row.name; 
+                      id.innerHTML = row.uid; 
+                      age.innerHTML = row.age; 
+                      // this builds td's into tr
+                      tr.appendChild(name);
+                      tr.appendChild(id);
+                      tr.appendChild(age);
+                      // append the row to table
+                      resultContainer.appendChild(tr);
+                    }
+                })
+            })
+            // catch fetch errors (ie ACCESS to server blocked)
+            .catch(err => {
+              console.error(err);
+              const tr = document.createElement("tr");
+              const td = document.createElement("td");
+              td.innerHTML = err + ": " + url;
+              tr.appendChild(td);
+              resultContainer.appendChild(tr);
+            });
+          </script>
+    </body>
+</html>

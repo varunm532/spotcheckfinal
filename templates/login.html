@@ -1,0 +1,77 @@
+<html lang="en">
+<body>
+    <h2>Add User</h2>
+
+<form action="javascript:login_user()">
+    <p>
+        <label>
+            Username:
+            <input type="text" name="name" id="name" required>
+        </label>
+    </p>
+    <p><label>
+        User ID:
+        <input type="text" name="uid" id="uid" required>
+    </label></p>
+    <p><label>
+        Password:
+        <input type="password" name="password" id="password" required>
+    </label></p>
+    <p>
+        <button>Login</button>
+    </p>
+</form>
+
+<!-- Add this line to your HTML -->
+<div id="users"></div>
+
+</body>
+</html>
+
+<script src="static/js/api/config.js">
+    // {% raw %}{{site.baseurl}}{% endraw %} is the baseurl of the site
+</script>
+
+<script>
+    // const src="{% raw %}{{site.baseurl}}{% endraw %}";
+    const url = '/api/user/'
+    
+    window.login_user = function(){
+        var uid = document.getElementById('uid').value;
+        var password = document.getElementById('password').value;
+        var name = document.getElementById('name').value;
+
+        var data = {
+            uid: uid,
+            password: password,
+            name: name
+        };
+
+        var json = JSON.stringify(data);
+
+        console.log('uid:', uid);
+        console.log('password:', password);
+        console.log('name:', name);
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: json
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            var users = document.getElementById('users');
+            if(users) {
+                users.innerHTML = JSON.stringify(data);
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+        window.location.href = "{{site.baseurl}}/display/"
+    }
+</script>
+

@@ -1,4 +1,3 @@
-""" database dependencies to support sqliteDB examples """
 from random import randrange
 from datetime import date
 import os, base64
@@ -50,7 +49,10 @@ class Post(db.Model):
     def read(self):
         # encode image
         path = app.config['UPLOAD_FOLDER']
-        file = os.path.join(path, self.image)
+        print(path)
+        #file = os.path.join(path, self.image)
+        file = os.path.join(path, "ncs_logo.png")
+
         file_text = open(file, 'rb')
         file_read = file_text.read()
         file_encode = base64.encodebytes(file_read)
@@ -222,4 +224,3 @@ def initUsers():
                 '''fails with bad or duplicate data'''
                 db.session.remove()
                 print(f"Records exist, duplicate email, or error: {user.uid}")
-            
