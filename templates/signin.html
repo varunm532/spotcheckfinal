@@ -53,10 +53,12 @@
             if(users) {
                 users.innerHTML = JSON.stringify(data);
             }
+            window.location.href = "http://127.0.0.1:8086/register"
         })
         .catch((error) => {
             console.error('Error:', error);
+            window.location.href = "http://127.0.0.1:8086/display/";
         });
-        window.location.href = "{{site.baseurl}}/display/"
+        
     }
 </script>

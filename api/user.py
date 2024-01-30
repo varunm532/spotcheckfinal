@@ -1,5 +1,5 @@
 import json, jwt
-from flask import Blueprint, request, jsonify, current_app, Response
+from flask import Blueprint, request, jsonify, current_app, Response, redirect
 from flask_restful import Api, Resource # used for REST API building
 from datetime import datetime
 from auth_middleware import token_required
