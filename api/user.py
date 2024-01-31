@@ -17,7 +17,7 @@ api = Api(user_api)
 
 class UserAPI:        
     class _CRUD(Resource):  # User API operation for Create, Read.  THe Update, Delete methods need to be implemeented
-        # @token_required
+        ##@token_required
         def post(self): # Create method
             ''' Read data for json body '''
             body = request.get_json()
@@ -65,7 +65,35 @@ class UserAPI:
             users = User.query.all()    # read/extract all users from database
             json_ready = [user.read() for user in users]  # prepare output in json
             return jsonify(json_ready)  # jsonify creates Flask response object, more specific to APIs than json.dumps
-    
+    class _Delete(Resource):
+        ##@token_required
+        def post(self):
+            body = request.get_json()
+
+            if not body:
+                return {
+                    "message": "Please provide user details",
+                    "data": None,
+                    "error": "Bad request"
+                }, 400
+
+            uid = body.get('uid')
+            if uid is None:
+                return {'message': f'User ID is missing'}, 400
+
+            password = body.get('password')
+
+            user = User.query.filter_by(_uid=uid).first()
+
+            if user is None or not user.is_password(password):
+                return {'message': f"Invalid user id or password"}, 400
+
+        # If UID and password are correct, delete the user from the database
+            db.session.delete(user)
+            db.session.commit()
+
+            return {'message': 'User deleted successfully'}, 200
+                
     class _Security(Resource):
         def post(self):
             try:
@@ -93,6 +121,7 @@ class UserAPI:
                             current_app.config["SECRET_KEY"],
                             algorithm="HS256"
                         )
+                        access = "true"
                         resp = Response("Authentication for %s successful" % (user._uid))
                         resp.set_cookie("jwt", token,
                                 max_age=3600,
@@ -123,3 +152,4 @@ class UserAPI:
     # building RESTapi endpoint
     api.add_resource(_CRUD, '/')
     api.add_resource(_Security, '/authenticate')
+    api.add_resource(_Delete, '/delete')
