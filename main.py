@@ -58,6 +58,11 @@ def signin():
     # Define your site variable here
     site = {'baseurl': 'http://localhost:8086'}
     return render_template('signin.html', site=site)
+@app.route('/delete', methods=['GET', 'POST'])
+def delete():
+    # Define your site variable here
+    site = {'baseurl': 'http://localhost:8086'}
+    return render_template('deleteuser.html', site=site)
 
 @app.route('/display/', methods=['GET'])
 def display():

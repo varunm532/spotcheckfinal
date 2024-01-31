@@ -9,7 +9,7 @@
 <h2>User List</h2>
 
 <div id="userList"></div>
-<button id="delete" onClick()>Click here to delete your account<button>
+<button id="delete" onClick = "user_delete()" >Click here to delete your account<button>
 
 <script>
     // Function to fetch and display user data
@@ -49,11 +49,15 @@
             alert('Error fetching users. Please check the console for details.');
         });
     }
+    function user_delete() {
+        window.location.href = "http://127.0.0.1:8086/delete"
+    }
 
     // Call the displayUsers function on page load
     window.onload = function() {
         displayUsers();
     };
+    
 </script>
 
 </body>
