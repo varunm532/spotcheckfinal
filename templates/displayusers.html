@@ -10,12 +10,13 @@
 
 <div id="userList"></div>
 <button id="delete" onClick = "user_delete()" >Click here to delete your account<button>
-
+<div id="userList"></div>
+<button id="delete" onClick = "logout()" >Click here to logout<button>
 <script>
     // Function to fetch and display user data
     function displayUsers() {
         //fetch('/api/players/', {
-            fetch('/api/user/', {
+            fetch('/api/user/display', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -46,11 +47,19 @@
         })
         .catch(error => {
             console.error('Error fetching users:', error);
-            alert('Error fetching users. Please check the console for details.');
+            alert('Error fetching users. Please check the console for details. 403');
+            window.location.href = "http://127.0.0.1:8086/signin"
         });
     }
     function user_delete() {
         window.location.href = "http://127.0.0.1:8086/delete"
+    }
+    function logout() {
+        // Clear the JWT token from local storage
+        localStorage.removeItem('jwt');
+    
+        // Redirect to the login page or another location
+        window.location.href = 'http://127.0.0.1:8086/signin';
     }
 
     // Call the displayUsers function on page load

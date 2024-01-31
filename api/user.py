@@ -2,7 +2,7 @@ import json, jwt
 from flask import Blueprint, request, jsonify, current_app, Response, redirect
 from flask_restful import Api, Resource # used for REST API building
 from datetime import datetime
-from auth_middleware import token_required
+from auth_middleware import token_required, User
 from __init__ import app, db, cors, dbURI
 import sqlite3
 
@@ -59,12 +59,7 @@ class UserAPI:
                 return jsonify(user.read())
             # failure returns error
             return {'message': f'Processed {name}, either a format error or User ID {uid} is duplicate'}, 400
-
-        # @token_required
-        def get(self): # Read Method , current_user
-            users = User.query.all()    # read/extract all users from database
-            json_ready = [user.read() for user in users]  # prepare output in json
-            return jsonify(json_ready)  # jsonify creates Flask response object, more specific to APIs than json.dumps
+    
     class _Delete(Resource):
         ##@token_required
         def post(self):
@@ -147,9 +142,18 @@ class UserAPI:
                         "error": str(e),
                         "data": None
                 }, 500
-
+    class _display(Resource):
+        @token_required
+        
+        def get(self,current_user): # Read Method , current_user
+            users = User.query.all()    # read/extract all users from database
+            json_ready = [user.read() for user in users]  # prepare output in json
+            return jsonify(json_ready)  # jsonify creates Flask response object, more specific to APIs than json.dumps
+        
+    
             
     # building RESTapi endpoint
     api.add_resource(_CRUD, '/')
     api.add_resource(_Security, '/authenticate')
     api.add_resource(_Delete, '/delete')
+    api.add_resource(_display, '/display')
