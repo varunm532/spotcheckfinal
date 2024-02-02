@@ -2,7 +2,7 @@ from random import randrange
 from datetime import date
 import os, base64
 import json
-
+from flask.cli import AppGroup
 from __init__ import app, db
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -10,9 +10,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 ''' Tutorial: https://www.sqlalchemy.org/library.html#tutorials, try to get into Python shell and follow along '''
 
-# Define the Post class to manage actions in 'posts' table,  with a relationship to 'users' table
+# Define the Post class to manage actions in 'posts_1' table,  with a relationship to 'users' table
 class Post(db.Model):
-    __tablename__ = 'posts'
+    __tablename__ = 'posts_1'
 
     # Define the Notes schema
     id = db.Column(db.Integer, primary_key=True)
@@ -72,7 +72,7 @@ class Post(db.Model):
 # -- b.) User represents data we want to store, something that is built on db.Model
 # -- c.) SQLAlchemy ORM is layer on top of SQLAlchemy Core, then SQLAlchemy engine, SQL
 class User(db.Model):
-    __tablename__ = 'users'  # table name is plural, class name is singular
+    __tablename__ = 'users_1'  # table name is plural, class name is singular
 
     # Define the User schema with "vars" from object
     id = db.Column(db.Integer, primary_key=True)
@@ -80,18 +80,16 @@ class User(db.Model):
     _uid = db.Column(db.String(255), unique=True, nullable=False)
     _password = db.Column(db.String(255), unique=False, nullable=False)
     _dob = db.Column(db.Date)
-    _zipcode = db.Column(db.Integer,unique=False,nullable=True)
     
     # Defines a relationship between User record and Notes table, one-to-many (one user to many notes)
-    posts = db.relationship("Post", cascade='all, delete', backref='users', lazy=True)
+    posts_1 = db.relationship("Post", cascade='all, delete', backref='users_1', lazy=True)
 
     # constructor of a User object, initializes the instance variables within object (self)
-    def __init__(self, name, uid, zipcode,password="123qwerty", dob=date.today()):
+    def __init__(self, name, uid, password="123qwerty", dob=date.today()):
         self._name = name    # variables with self prefix become part of the object, 
         self._uid = uid
         self.set_password(password)
         self._dob = dob
-        self._zipcode = zipcode
 
     # a name getter method, extracts name from object
     @property
@@ -148,17 +146,6 @@ class User(db.Model):
         today = date.today()
         return today.year - self._dob.year - ((today.month, today.day) < (self._dob.month, self._dob.day))
     
-    @property
-    def zipcode(self, zipcode):
-        self._zipcode = zipcode
-        
-    @zipcode.setter
-    def zipcode(self,zipcode):
-        self._zipcode = zipcode
-    
-    
-    
-        
     # output content using str(object) in human readable form, uses getter
     # output content using json dumps, this is ready for API response
     def __str__(self):
@@ -185,8 +172,7 @@ class User(db.Model):
             "uid": self.uid,
             "dob": self.dob,
             "age": self.age,
-            "zipcode": self.zipcode,
-            "posts": [post.read() for post in self.posts]
+            "posts_1": [post.read() for post in self.posts_1]
         }
 
     # CRUD update: updates user name, password, phone
@@ -199,8 +185,6 @@ class User(db.Model):
             self.uid = uid
         if len(password) > 0:
             self.set_password(password)
-        if len(zipcode) > 0:
-            self.zipcode = zipcode
         db.session.commit()
         return self
 
@@ -216,24 +200,24 @@ class User(db.Model):
 
 
 # Builds working data for testing
-def initUsers():
+def initUsers_1():
     with app.app_context():
         """Create database and tables"""
         db.create_all()
         """Tester data for table"""
-        u1 = User(name='Thomas Edison', uid='toby', password='123toby', zipcode='11111',dob=date(1847, 2, 11))
-        u2 = User(name='Nicholas Tesla', uid='niko', password='123niko',zipcode='11111', dob=date(1856, 7, 10))
-        u3 = User(name='Alexander Graham Bell', uid='lex',zipcode='11111')
-        u4 = User(name='Grace Hopper', uid='hop', password='123hop',zipcode='11111', dob=date(1906, 12, 9))
-        users = [u1, u2, u3, u4]
+        u1 = User(name='Thomas Edison', uid='toby', password='123toby', dob=date(1847, 2, 11))
+        u2 = User(name='Nicholas Tesla', uid='niko', password='123niko', dob=date(1856, 7, 10))
+        u3 = User(name='Alexander Graham Bell', uid='lex')
+        u4 = User(name='Grace Hopper', uid='hop', password='123hop', dob=date(1906, 12, 9))
+        users_1 = [u1, u2, u3, u4]
 
         """Builds sample user/note(s) data"""
-        for user in users:
+        for user in users_1:
             try:
                 '''add a few 1 to 4 notes per user'''
                 for num in range(randrange(1, 4)):
                     note = "#### " + user.name + " note " + str(num) + ". \n Generated by test data."
-                    user.posts.append(Post(id=user.id, note=note, image='ncs_logo.png'))
+                    user.posts_1.append(Post(id=user.id, note=note, image='ncs_logo.png'))
                 '''add user/post data to table'''
                 user.create()
             except IntegrityError:

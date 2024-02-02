@@ -35,10 +35,10 @@ class UserAPI:
             # look for password and dob
             password = body.get('password')
             dob = body.get('dob')
-
+            zipcode = body.get('zipcode')
             ''' #1: Key code block, setup USER OBJECT '''
             uo = User(name=name,
-                      uid=uid)
+                      uid=uid,password=password,zipcode=zipcode)
             
             ''' Additional garbage error checking '''
             # set password if provided
@@ -88,7 +88,11 @@ class UserAPI:
             db.session.commit()
 
             return {'message': 'User deleted successfully'}, 200
-                
+          # @token_required
+        def get(self): # Read Method , current_user
+            users = User.query.all()    # read/extract all users from database
+            json_ready = [user.read() for user in users]  # prepare output in json
+            return jsonify(json_ready)  # jsonify creates Flask response object, more specific to APIs than json.dumps       
     class _Security(Resource):
         def post(self):
             try:
