@@ -2,7 +2,7 @@ import threading
 import sqlite3
 
 # import "packages" from flask
-from flask import render_template,render_template, url_for, redirect,request  # import render_template from "public" flask libraries
+from flask import render_template,render_template, url_for, redirect,request,make_response  # import render_template from "public" flask libraries
 from flask.cli import AppGroup
 
 
@@ -83,6 +83,16 @@ def login1():
             return redirect(url_for('welcome'))
 
     return render_template('login1.html')
+@app.route('/logout')
+def logout():
+    # Create a response
+    response = make_response("Logged out!")
+
+    # Set the cookie with an expiration time in the past
+    response.set_cookie('jwt', '', expires=0)
+
+    return response
+
 class User(UserMixin):
     def __init__(self, uid, password):
         self.uid = uid

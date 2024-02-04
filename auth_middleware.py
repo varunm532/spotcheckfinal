@@ -1,8 +1,9 @@
 from functools import wraps
 import jwt
-from flask import request, abort
+from flask import request, abort, jsonify
 from flask import current_app
 from model.users import User
+
 
 def token_required(f):
     @wraps(f)
@@ -16,7 +17,11 @@ def token_required(f):
             }, 401
         try:
             data=jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
+            print("current_user:")
+            print(User.query.filter_by(_uid=data["_uid"]).first())
             current_user=User.query.filter_by(_uid=data["_uid"]).first()
+            print("current_user1:")
+            print(current_user.uid)
             if current_user is None:
                 return {
                 "message": "Invalid Authentication token!",

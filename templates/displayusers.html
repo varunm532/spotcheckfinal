@@ -16,7 +16,7 @@
     // Function to fetch and display user data
     function displayUsers() {
         //fetch('/api/players/', {
-            fetch('/api/user/display', {
+            fetch('/api/user/userinfo', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -31,7 +31,7 @@
                 userListHTML += '<strong>Name:</strong> ' + user.name + '<br>';
                 userListHTML += '<strong>User ID:</strong> ' + user.uid + '<br>';
                 userListHTML += '<strong>Date of Birth:</strong> ' + user.dob + '<br>';
-                //userListHTML += '<strong>Age:</strong> ' + user.age + '<br>';
+                userListHTML += '<strong>Zipcode:</strong> ' + user.zipcode + '<br>';
                 userListHTML += '<strong>Posts:</strong> <ul>';
                    user.posts.forEach(post => {
                     userListHTML += '<li>' + post.note + '</li>';
@@ -56,17 +56,13 @@
     }
     function logout() {
         // Clear the JWT token from local storage
-        localStorage.removeItem('jwt');
-    
-        // Redirect to the login page or another location
-        window.location.href = 'http://127.0.0.1:8086/signin';
+        window.location.href = 'http://127.0.0.1:8086/logout';
     }
 
     // Call the displayUsers function on page load
     window.onload = function() {
         displayUsers();
     };
-    
 </script>
 
 </body>

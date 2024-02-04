@@ -14,6 +14,7 @@ user_api = Blueprint('user_api', __name__,
 
 # API docs https://flask-restful.readthedocs.io/en/latest/api.html
 api = Api(user_api)
+uid_copy = 0
 
 class UserAPI:        
     class _CRUD(Resource):  # User API operation for Create, Read.  THe Update, Delete methods need to be implemeented
@@ -105,6 +106,7 @@ class UserAPI:
                     }, 400
                 ''' Get Data '''
                 uid = body.get('uid')
+                uid_copy = body.get('uid')                
                 if uid is None:
                     return {'message': f'User ID is missing'}, 400
                 password = body.get('password')
@@ -151,9 +153,27 @@ class UserAPI:
         
         def get(self,current_user): # Read Method , current_user
             users = User.query.all()    # read/extract all users from database
-            json_ready = [user.read() for user in users]  # prepare output in json
+            json_ready = [user.read() for user in users]   # prepare output in json
             return jsonify(json_ready)  # jsonify creates Flask response object, more specific to APIs than json.dumps
         
+    class _userinfo(Resource):
+        @token_required
+        
+        def get(self,current_user): # Read Method , current_user
+            users = User.query.all()    # read/extract all users from database
+            #json_ready = [user.read() for user in users if user.uid() == '2']
+            json_ready = [user.read() for user in users]
+            token = request.cookies.get("jwt")
+            data=jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
+            print("This is data")
+            print(data)
+            #print([item for item in json_ready if item.get('uid') == '2'])
+            #print(jsonify(current_user))
+            #print(json_ready[0])
+            return jsonify([item for item in json_ready if item.get('uid') == data.get('_uid')])  # jsonify creates Flask response object, more specific to APIs than json.dumps
+	
+
+            
     
             
     # building RESTapi endpoint
@@ -161,3 +181,6 @@ class UserAPI:
     api.add_resource(_Security, '/authenticate')
     api.add_resource(_Delete, '/delete')
     api.add_resource(_display, '/display')
+    api.add_resource(_userinfo, '/userinfo')
+
+    

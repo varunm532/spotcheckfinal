@@ -80,7 +80,7 @@ class User(db.Model):
     _uid = db.Column(db.String(255), unique=True, nullable=False)
     _password = db.Column(db.String(255), unique=False, nullable=False)
     _dob = db.Column(db.Date)
-    _zipcode = db.Column(db.Integer,unique=False,nullable=True)
+    _zipcode = db.Column(db.Integer,unique=False,nullable=False)
     
     # Defines a relationship between User record and Notes table, one-to-many (one user to many notes)
     posts = db.relationship("Post", cascade='all, delete', backref='users', lazy=True)
@@ -149,8 +149,8 @@ class User(db.Model):
         return today.year - self._dob.year - ((today.month, today.day) < (self._dob.month, self._dob.day))
     
     @property
-    def zipcode(self, zipcode):
-        self._zipcode = zipcode
+    def zipcode(self):
+        return self._zipcode
         
     @zipcode.setter
     def zipcode(self,zipcode):
@@ -191,7 +191,7 @@ class User(db.Model):
 
     # CRUD update: updates user name, password, phone
     # returns self
-    def update(self, name="", uid="", password=""):
+    def update(self, name="", uid="", password="",zipcode=""):
         """only updates values with length"""
         if len(name) > 0:
             self.name = name
