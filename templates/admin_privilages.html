@@ -17,7 +17,7 @@
     // Function to fetch and display user data
     function displayUsers() {
         //fetch('/api/players/', {
-            fetch('/api/user/userinfo', {
+            fetch('/api/user/display', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -48,8 +48,8 @@
         })
         .catch(error => {
             console.error('Error fetching users:', error);
-            alert('Error fetching users. Please check the console for details. 403');
-            window.location.href = "http://127.0.0.1:8086/signin"
+            alert('You need admin privilages, 403');
+            window.location.href = "http://127.0.0.1:8086/display/"
         });
     }
     function user_delete() {
@@ -61,7 +61,7 @@
     }
     function viewall() {
         // Clear the JWT token from local storage
-        window.location.href = 'http://127.0.0.1:8086/admin';
+        window.location.href = 'http://127.0.0.1:8086/logout';
     }
     // Call the displayUsers function on page load
     window.onload = function() {

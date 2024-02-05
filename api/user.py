@@ -152,9 +152,12 @@ class UserAPI:
         @token_required
         
         def get(self,current_user): # Read Method , current_user
-            users = User.query.all()    # read/extract all users from database
-            json_ready = [user.read() for user in users]   # prepare output in json
-            return jsonify(json_ready)  # jsonify creates Flask response object, more specific to APIs than json.dumps
+            token = request.cookies.get("jwt")
+            data=jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
+            if(data.get('_uid') == 'admin'):
+                users = User.query.all()    # read/extract all users from database
+                json_ready = [user.read() for user in users]   # prepare output in json
+                return jsonify(json_ready)  # jsonify creates Flask response object, more specific to APIs than json.dumps
         
     class _userinfo(Resource):
         @token_required

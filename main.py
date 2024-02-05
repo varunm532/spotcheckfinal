@@ -69,6 +69,11 @@ def display():
     site = {'baseurl': 'http://localhost:8086'}
     ##return render_template('getusers.html', site=site)
     return render_template('displayusers.html', site=site)
+@app.route('/admin/', methods=['GET'])
+def admin():
+    site = {'baseurl': 'http://localhost:8086'}
+    ##return render_template('getusers.html', site=site)
+    return render_template('admin_privilages.html', site=site)
 
 @app.route('/login1', methods=['GET', 'POST'])
 def login1():
