@@ -1,24 +1,43 @@
-<html>
-    <h2>Sign in</h2>
-    <body>
-        <form action="javascript:login_user()">
-            <p><label>
-                User ID:
-                <input type="text" name="uid" id="uid" required>
-            </label></p>
-            <p><label>
-                Password:
-                <input type="password" name="password" id="password" required>
-            </label></p>
-            <p>
-                <button>Login</button>
-            </p>
-        </form>
-        <script>
-            
-        </script>
-    </body>
-</html>
+<style>
+    .card1 {
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        background-color: rgba(0, 0, 128, 0.9);;
+        transition: 0.3s;
+        width: 50%;
+        color: white;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }   
+</style>
+{% extends "layouts/base.html" %}
+{% block body %}
+    <html>
+       <div class="card1">
+            <h2>Sign in</h2>
+            <body>
+                <form action="javascript:login_user()">
+                    <p><label>
+                        User ID:
+                        <input type="text" name="uid" id="uid" required>
+                    </label></p>
+                    <p><label>
+                        Password:
+                        <input type="password" name="password" id="password" required>
+                    </label></p>
+                    <p>
+                        <button>Login</button>
+                    </p>
+                </form>
+                <script>
+                    
+                </script>
+            </body>
+        </div>
+    </html>
+{% endblock %}
+
 <script>
     // const src="{% raw %}{{site.baseurl}}{% endraw %}";
     const url = '/api/user/authenticate'

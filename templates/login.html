@@ -1,32 +1,49 @@
-<html lang="en">
-<body>
-    <h2>Add User</h2>
+<style>
+    .card1 {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 50%;
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
+{% extends "layouts/base.html" %}
+{% block body %}
+    <html lang="en">
+        <div class="card1">
+            <body>
+                <h2>Add User</h2>
 
-<form action="javascript:login_user()">
-    <p>
-        <label>
-            Username:
-            <input type="text" name="name" id="name" required>
-        </label>
-    </p>
-    <p><label>
-        User ID:
-        <input type="text" name="uid" id="uid" required>
-    </label></p>
-    <p><label>
-        Password:
-        <input type="password" name="password" id="password" required>
-    </label></p>
-    <p>
-        <button>Register</button>
-    </p>
-</form>
+            <form action="javascript:login_user()">
+                <p>
+                    <label>
+                        Username:
+                        <input type="text" name="name" id="name" required>
+                    </label>
+                </p>
+                <p><label>
+                    User ID:
+                    <input type="text" name="uid" id="uid" required>
+                </label></p>
+                <p><label>
+                    Password:
+                    <input type="password" name="password" id="password" required>
+                </label></p>
+                <p>
+                    <button>Register</button>
+                </p>
+            </form>
 
-<!-- Add this line to your HTML -->
-<div id="users"></div>
+            <!-- Add this line to your HTML -->
+            <div id="users"></div>
 
-</body>
-</html>
+            </body>
+        </div>
+    </html>
+{% endblock %}
 
 <script src="static/js/api/config.js">
     // {% raw %}{{site.baseurl}}{% endraw %} is the baseurl of the site
