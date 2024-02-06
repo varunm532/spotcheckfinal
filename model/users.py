@@ -4,8 +4,33 @@ import os, base64
 import json
 
 from __init__ import app, db
+
 from sqlalchemy.exc import IntegrityError
+
 from werkzeug.security import generate_password_hash, check_password_hash
+#from flask import Flask, current_app
+#from flask_migrate import Migrate
+
+
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///volumes/sqlite.db' # SQLite database
+#app.config['SECRET_KEY'] = '09f26e402586e2faa8da4c98a35f1b20d6b033c60'  # Random secret key
+#app.config['UPLOAD_FOLDER'] = 'volumes/uploads/'  # Upload folder for images
+
+#from flask_sqlalchemy import SQLAlchemy
+
+#import os
+#dbURI = 'sqlite:///volumes/sqlite.db'
+#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#app.config['SQLALCHEMY_DATABASE_URI'] = dbURI
+#SECRET_KEY = os.environ.get('SECRET_KEY') or 'SECRET_KEY'
+#app.config['SECRET_KEY'] = SECRET_KEY
+#db = SQLAlchemy()
+#import os
+#app = Flask(__name__)
+#db = SQLAlchemy(app)
+#Migrate(app, db)
+
+
 
 
 ''' Tutorial: https://www.sqlalchemy.org/library.html#tutorials, try to get into Python shell and follow along '''
@@ -81,17 +106,19 @@ class User(db.Model):
     _password = db.Column(db.String(255), unique=False, nullable=False)
     _dob = db.Column(db.Date)
     _zipcode = db.Column(db.Integer,unique=False,nullable=False)
+    _role = db.Column(db.String(20), default="User", nullable=False)
     
     # Defines a relationship between User record and Notes table, one-to-many (one user to many notes)
     posts = db.relationship("Post", cascade='all, delete', backref='users', lazy=True)
 
     # constructor of a User object, initializes the instance variables within object (self)
-    def __init__(self, name, uid, zipcode,password="123qwerty", dob=date.today()):
+    def __init__(self, name, uid, zipcode, role, password="123qwerty", dob=date.today()):
         self._name = name    # variables with self prefix become part of the object, 
         self._uid = uid
         self.set_password(password)
         self._dob = dob
         self._zipcode = zipcode
+        self._role = role
 
     # a name getter method, extracts name from object
     @property
@@ -156,6 +183,17 @@ class User(db.Model):
     def zipcode(self,zipcode):
         self._zipcode = zipcode
     
+    @property
+    def role(self):
+        return self._role
+
+    @role.setter
+    def role(self, role):
+        self._role = role
+
+    def is_admin(self):
+        return self._role == "Admin"
+    
     
     
         
@@ -186,12 +224,13 @@ class User(db.Model):
             "dob": self.dob,
             "age": self.age,
             "zipcode": self.zipcode,
+            "role": self.role,
             "posts": [post.read() for post in self.posts]
         }
 
     # CRUD update: updates user name, password, phone
     # returns self
-    def update(self, name="", uid="", password="",zipcode=""):
+    def update(self, name="", uid="", password="",zipcode="",role=""):
         """only updates values with length"""
         if len(name) > 0:
             self.name = name
@@ -201,6 +240,8 @@ class User(db.Model):
             self.set_password(password)
         if len(zipcode) > 0:
             self.zipcode = zipcode
+        if len(role) > 0:
+            self.role = role
         db.session.commit()
         return self
 
@@ -221,10 +262,10 @@ def initUsers():
         """Create database and tables"""
         db.create_all()
         """Tester data for table"""
-        u1 = User(name='Thomas Edison', uid='toby', password='123toby', zipcode='11111',dob=date(1847, 2, 11))
-        u2 = User(name='Nicholas Tesla', uid='niko', password='123niko',zipcode='11111', dob=date(1856, 7, 10))
-        u3 = User(name='Alexander Graham Bell', uid='lex',zipcode='11111')
-        u4 = User(name='Grace Hopper', uid='hop', password='123hop',zipcode='11111', dob=date(1906, 12, 9))
+        u1 = User(name='Thomas Edison', uid='toby1', password='123toby', zipcode='11111',dob=date(1847, 2, 11), role="Admin")
+        u2 = User(name='Nicholas Tesla', uid='niko1', password='123niko',zipcode='11111', dob=date(1856, 7, 10), role="user")
+        u3 = User(name='Alexander Graham Bell', uid='lex1',zipcode='11111', role="user")
+        u4 = User(name='Grace Hopper', uid='hop1', password='123hop',zipcode='11111', dob=date(1906, 12, 9), role="user")
         users = [u1, u2, u3, u4]
 
         """Builds sample user/note(s) data"""

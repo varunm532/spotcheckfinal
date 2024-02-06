@@ -33,6 +33,7 @@
                 userListHTML += '<strong>User ID:</strong> ' + user.uid + '<br>';
                 userListHTML += '<strong>Date of Birth:</strong> ' + user.dob + '<br>';
                 userListHTML += '<strong>Zipcode:</strong> ' + user.zipcode + '<br>';
+                userListHTML += '<strong>Role:</strong>' + user.role + '<br>';
                 userListHTML += '<strong>Posts:</strong> <ul>';
                    user.posts.forEach(post => {
                     userListHTML += '<li>' + post.note + '</li>';
@@ -49,7 +50,7 @@
         .catch(error => {
             console.error('Error fetching users:', error);
             alert('Error fetching users. Please check the console for details. 403');
-            window.location.href = "http://127.0.0.1:8086/signin"
+            //window.location.href = "http://127.0.0.1:8086/signin"
         });
     }
     function user_delete() {

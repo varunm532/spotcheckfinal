@@ -18,6 +18,7 @@ from model.users import initUsers
 from model.players import initPlayers
 from flask_login import  LoginManager, login_user, logout_user, login_required, UserMixin
 from flask_bcrypt import Bcrypt
+from flask_cors import cross_origin
 
 # setup App pages
 from projects.projects import app_projects # Blueprint directory import projects definition
@@ -33,6 +34,7 @@ app.register_blueprint(app_projects) # register app pages
 
 login_manager = LoginManager(app)
 bcrypt = Bcrypt(app)
+
 
 @app.errorhandler(404)  # catch for URL not found
 def page_not_found(e):
